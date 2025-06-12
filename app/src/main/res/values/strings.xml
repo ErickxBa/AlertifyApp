@@ -5,12 +5,14 @@
     <string name="register_tab_text">Registrar</string>
     <string name="hint_username_email">Username or Email</string>
     <string name="hint_password">Password</string>
+    <string name="hint_confirm_password">Confirm Password</string>
     <string name="button_login">Ingresar</string>
     <string name="forgot_password">Forgot password?</string>
     <string name="or_text">or</string>
     <string name="error_invalid_credentials">Usuario o contraseña incorrectos</string>
     <string name="welcome_message">¡Bienvenido a Alertify!</string>
-
+    <string name="error_passwords_mismatch">Las contraseñas no coinciden</string>
+    <string name="registration_successful">Registro exitoso. ¡Inicia sesión!</string>
     <string name="demo_username">user@example.com</string>
     <string name="demo_password">password123</string>
 
