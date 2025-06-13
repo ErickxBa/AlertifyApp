@@ -15,5 +15,27 @@
     <string name="registration_successful">Registro exitoso. ¡Inicia sesión!</string>
     <string name="demo_username">user@example.com</string>
     <string name="demo_password">password123</string>
+    <string name="textoTituloRecompensa">Liga Actual</string>
+    <string name="texto_LigaAportes">Total de Aportes: 6</string>
+    <string name="texto_inicio">Inicio 0</string>
+    <string name="texto_principiante">+7 Principiante</string>
+    <string name="texto_legioReseñas">+25 Legion de Reseñas</string>
+    <string name="texto_beneficios">Beneficios</string>
+    <string name="texto_boton_regresar">Regresar</string>
+    <string name="texto_recompensa_recarga">Recibe hasta 5$ en saldo por ayudar a la comunidad</string>
+    <string name="texto_titulo_recarga">Recargas de Saldo</string>
+    <string name="texto_boton_reclamar">Reclamar</string>
+    <string name="texto_titulo_descuentoUber">Descuento en Uber</string>
+    <string name="texto_descuento_uber">Recibe descuento al pedir el servicio de Uber desde la app</string>
+    <string name="texto_titulo_metro">Descuento en el Metro</string>
+    <string name="texto_recompensa_metro">Recibe un 20% de descuento en pasajes del metro</string>
+    <string name="texto_tituloNotificaciones">Notificaciones</string>
+    <string name="texto_boton_verMapa_Notificacion">Ver Mapa</string>
+    <string name="texto_tituloDeUnaNotificacion">Alerta de Robos</string>
+    <string name="texto_ubicacióNotificacion">EPN</string>
+    <string name="texto_mensaje_notificaciónDeRobo">Se ha reportado actividad sospechosa alrededor de tu sector</string>
+    <string name="texto_boton_borrarTodo">Borrar todo</string>
+    <string name="open_drawer">Abrir menú lateral</string>
+    <string name="close_drawer">Cerrar menú lateral</string>
 
 </resources>

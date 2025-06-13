@@ -13,6 +13,21 @@
         android:theme="@style/Theme.AlertifyApp"
         tools:targetApi="31">
         <activity
+            android:name=".AgregarReseniaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DetalleReseniasActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ReseniasActivity"
+            android:exported="false" />
+        <activity
+            android:name=".NotificacionesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RecompensasActivity"
+            android:exported="false" />
+        <activity
             android:name=".RutaIniciadaActivity"
             android:exported="false" />
         <activity
@@ -23,20 +38,20 @@
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:exported="true"
-            android:windowSoftInputMode="adjustResize">
+            android:exported="true" android:configChanges="orientation|keyboardHidden|screenSize"
+            android:windowSoftInputMode="adjustResize"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".MainActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
+            android:exported="false" android:configChanges="orientation|keyboardHidden|screenSize"
+            android:windowSoftInputMode="adjustResize">
+        </activity>
     </application>
 
 </manifest>

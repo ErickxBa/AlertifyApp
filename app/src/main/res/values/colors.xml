@@ -10,4 +10,8 @@
     <color name="button_background_black">#FF000000</color>
     <color name="button_text_orange">#FF9800</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="boton_recompensas">#9AC4F5</color>
+    <color name="fondo_card_recompensas">#DEF9FC</color>
+    <color name="fondo_boton_2">#080D16</color>
+    <color name="color_fondo_reseña">#213A66</color>
 </resources>
