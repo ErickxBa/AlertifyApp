@@ -4,23 +4,22 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-
+import android.graphics.RenderEffect
+import android.graphics.Shader
+import android.os.Build
 import android.os.Bundle
 import android.renderscript.Allocation
 import android.renderscript.Element
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
+import android.util.Patterns
 import android.view.View
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.view.inputmethod.InputMethodManager
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout // Import TextInputLayout
+import com.google.android.material.textfield.TextInputLayout
 
 class LoginActivity : AppCompatActivity() {
 
@@ -28,99 +27,83 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var tvRegisterTab: TextView
     private lateinit var etUsernameEmail: TextInputEditText
     private lateinit var etPassword: TextInputEditText
-    private lateinit var tilConfirmPassword: TextInputLayout // NEW: Reference to Confirm Password TextInputLayout
-    private lateinit var etConfirmPassword: TextInputEditText // NEW: Reference to Confirm Password EditText
+    private lateinit var tilConfirmPassword: TextInputLayout
+    private lateinit var etConfirmPassword: TextInputEditText
     private lateinit var tvForgotPassword: TextView
-    private lateinit var btnAction: Button // RENAMED: Action button (Login/Register)
+    private lateinit var btnAction: Button
     private lateinit var btnFacebookLogin: ImageButton
-    private lateinit var btnAppleLogin: ImageButton
     private lateinit var btnGoogleLogin: ImageButton
     private lateinit var ivBackgroundImage: ImageView
     private lateinit var loginCardView: CardView
-    private lateinit var tvOrSeparator: TextView // NEW: Reference to "or" TextView
-    private lateinit var llSocialLogins: LinearLayout // NEW: Reference to Social Logins LinearLayout
+    private lateinit var tvOrSeparator: TextView
+    private lateinit var llSocialLogins: LinearLayout
 
-    private var isLoginMode: Boolean = true // Track current mode (Login by default)
+    private var isLoginMode = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // Initialize Views
+        // View references
         tvLoginTab = findViewById(R.id.tv_login_tab)
         tvRegisterTab = findViewById(R.id.tv_register_tab)
         etUsernameEmail = findViewById(R.id.et_username_email)
         etPassword = findViewById(R.id.et_password)
-        tilConfirmPassword = findViewById(R.id.til_confirm_password) // Initialize
-        etConfirmPassword = findViewById(R.id.et_confirm_password) // Initialize
+        tilConfirmPassword = findViewById(R.id.til_confirm_password)
+        etConfirmPassword = findViewById(R.id.et_confirm_password)
         tvForgotPassword = findViewById(R.id.tv_forgot_password)
-        btnAction = findViewById(R.id.btn_action) // Initialize with new ID
+        btnAction = findViewById(R.id.btn_action)
         btnFacebookLogin = findViewById(R.id.btn_facebook_login)
         btnGoogleLogin = findViewById(R.id.btn_google_login)
         ivBackgroundImage = findViewById(R.id.iv_background_image)
         loginCardView = findViewById(R.id.login_card_view)
-        tvOrSeparator = findViewById(R.id.tv_or_separator) // Initialize
-        llSocialLogins = findViewById(R.id.ll_social_logins) // Initialize
+        tvOrSeparator = findViewById(R.id.tv_or_separator)
+        llSocialLogins = findViewById(R.id.ll_social_logins)
 
-        // Apply blur to the background image
         applyBlurToBackground()
-
-        // Set initial state for tabs (Login mode by default)
         updateUIMode(true)
 
-        // Click listeners for tabs
         tvLoginTab.setOnClickListener { updateUIMode(true) }
         tvRegisterTab.setOnClickListener { updateUIMode(false) }
 
-        // Click listener for Action button (Login/Register)
         btnAction.setOnClickListener {
-            if (isLoginMode) {
-                performLogin()
-            } else {
-                performRegistration()
-            }
+            hideKeyboard()
+            if (isLoginMode) performLogin() else performRegistration()
         }
 
-        // Click listener for Forgot Password
         tvForgotPassword.setOnClickListener {
-            Toast.makeText(this, "Funcionalidad de recuperar contraseña no implementada.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Recuperación no implementada aún.", Toast.LENGTH_SHORT).show()
         }
 
-        // Click listeners for social login buttons (placeholders)
         btnFacebookLogin.setOnClickListener {
-            Toast.makeText(this, "Login con Facebook (no implementado)", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Login con Facebook (pendiente)", Toast.LENGTH_SHORT).show()
         }
-        btnAppleLogin.setOnClickListener {
-            Toast.makeText(this, "Login con Apple (no implementado)", Toast.LENGTH_SHORT).show()
-        }
+
         btnGoogleLogin.setOnClickListener {
-            Toast.makeText(this, "Login con Google (no implementado)", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Login con Google (pendiente)", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun updateUIMode(toLoginMode: Boolean) {
         isLoginMode = toLoginMode
 
-        // Update toggle tab appearance
         if (isLoginMode) {
             tvLoginTab.setBackgroundResource(R.drawable.shape_toggle_button_selected)
-            tvLoginTab.setTextColor(getColor(R.color.toggle_unselected)) // white
+            tvLoginTab.setTextColor(getColor(R.color.toggle_unselected))
             tvRegisterTab.setBackgroundResource(R.drawable.shape_toggle_button_unselected)
-            tvRegisterTab.setTextColor(getColor(R.color.toggle_selected)) // black
+            tvRegisterTab.setTextColor(getColor(R.color.toggle_selected))
         } else {
             tvLoginTab.setBackgroundResource(R.drawable.shape_toggle_button_unselected)
-            tvLoginTab.setTextColor(getColor(R.color.toggle_selected)) // black
+            tvLoginTab.setTextColor(getColor(R.color.toggle_selected))
             tvRegisterTab.setBackgroundResource(R.drawable.shape_toggle_button_selected)
-            tvRegisterTab.setTextColor(getColor(R.color.toggle_unselected)) // white
+            tvRegisterTab.setTextColor(getColor(R.color.toggle_unselected))
         }
 
-        // Update visibility of Confirm Password and other elements
         tilConfirmPassword.visibility = if (isLoginMode) View.GONE else View.VISIBLE
         tvForgotPassword.visibility = if (isLoginMode) View.VISIBLE else View.GONE
         tvOrSeparator.visibility = if (isLoginMode) View.VISIBLE else View.GONE
         llSocialLogins.visibility = if (isLoginMode) View.VISIBLE else View.GONE
 
-        // Update main action button text
         btnAction.text = if (isLoginMode) getString(R.string.button_login) else getString(R.string.register_tab_text)
     }
 
@@ -128,13 +111,17 @@ class LoginActivity : AppCompatActivity() {
         val username = etUsernameEmail.text.toString().trim()
         val password = etPassword.text.toString().trim()
 
-        val demoUsername = getString(R.string.demo_username)
-        val demoPassword = getString(R.string.demo_password)
+        if (username.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Campos requeridos.", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-        if (username == demoUsername && password == demoPassword) {
+        val prefs = getSharedPreferences("users", Context.MODE_PRIVATE)
+        val savedPassword = prefs.getString(username, null)
+
+        if (savedPassword == password) {
             Toast.makeText(this, getString(R.string.welcome_message), Toast.LENGTH_SHORT).show()
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, MainActivity::class.java))
             finish()
         } else {
             Toast.makeText(this, getString(R.string.error_invalid_credentials), Toast.LENGTH_SHORT).show()
@@ -146,9 +133,13 @@ class LoginActivity : AppCompatActivity() {
         val password = etPassword.text.toString().trim()
         val confirmPassword = etConfirmPassword.text.toString().trim()
 
-        // Basic validation for registration
         if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            Toast.makeText(this, "Por favor, completa todos los campos.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Completa todos los campos.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(username).matches()) {
+            Toast.makeText(this, "Formato de correo inválido.", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -157,44 +148,53 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        // TODO: Implement actual user registration (e.g., call API, save to database)
-        // For now, we'll just show a success message and switch to login mode
+        val prefs = getSharedPreferences("users", Context.MODE_PRIVATE)
+        if (prefs.contains(username)) {
+            Toast.makeText(this, "Usuario ya registrado.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        prefs.edit().putString(username, password).apply()
+
         Toast.makeText(this, getString(R.string.registration_successful), Toast.LENGTH_SHORT).show()
-        updateUIMode(true) // Switch back to login mode after successful registration (conceptual)
+        updateUIMode(true)
     }
 
-    // Existing blurBitmap function
     private fun applyBlurToBackground() {
-        val originalBitmap = BitmapFactory.decodeResource(resources, R.drawable.background_login_image)
-        if (originalBitmap != null) {
-            val scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, originalBitmap.width / 4, originalBitmap.height / 4, false)
-            val blurredBitmap = blurBitmap(this, scaledBitmap, 20f)
-            ivBackgroundImage.setImageBitmap(blurredBitmap)
-            originalBitmap.recycle()
-            scaledBitmap.recycle()
+        val bitmap = BitmapFactory.decodeResource(resources, R.drawable.background_login_image)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            ivBackgroundImage.setRenderEffect(
+                RenderEffect.createBlurEffect(20f, 20f, Shader.TileMode.CLAMP)
+            )
+            ivBackgroundImage.setImageBitmap(bitmap)
         } else {
-            Toast.makeText(this, "Error al cargar la imagen de fondo.", Toast.LENGTH_LONG).show()
+            val scaledBitmap = Bitmap.createScaledBitmap(bitmap, bitmap.width / 4, bitmap.height / 4, false)
+            val blurred = blurBitmap(this, scaledBitmap, 20f)
+            ivBackgroundImage.setImageBitmap(blurred)
+            bitmap.recycle()
+            scaledBitmap.recycle()
         }
     }
 
     private fun blurBitmap(context: Context, bitmap: Bitmap, radius: Float): Bitmap {
-        if (radius <= 0f || radius > 25f) {
-            throw IllegalArgumentException("radius must be between 0 and 25 (inclusive)")
-        }
-        val rsContext = RenderScript.create(context)
-        val input = Allocation.createFromBitmap(rsContext, bitmap, Allocation.MipmapControl.MIPMAP_NONE, Allocation.USAGE_SCRIPT)
-        val output = Allocation.createTyped(rsContext, input.type)
-        val script = ScriptIntrinsicBlur.create(rsContext, Element.U8_4(rsContext))
+        val rs = RenderScript.create(context)
+        val input = Allocation.createFromBitmap(rs, bitmap)
+        val output = Allocation.createTyped(rs, input.type)
+        val script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs))
         script.setRadius(radius)
         script.setInput(input)
         script.forEach(output)
         output.copyTo(bitmap)
-
-        input.destroy()
-        output.destroy()
-        script.destroy()
-        rsContext.destroy()
-
+        rs.destroy()
         return bitmap
+    }
+
+    private fun hideKeyboard() {
+        val view = currentFocus
+        if (view != null) {
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
     }
 }
