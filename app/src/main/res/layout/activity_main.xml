@@ -1,20 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:background="@color/dark_background" tools:context=".MainActivity">
+    tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="¡Bienvenido a la pantalla principal de Alertify!"
-        android:textSize="24sp"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:padding="16dp"/>
+    <ImageView
+        android:id="@+id/map_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/map"
+        android:scaleType="centerCrop"
+        android:contentDescription="Mapa" />
 
-</LinearLayout>
+    <ImageButton
+        android:id="@+id/menu_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"  android:background="@drawable/menu"
+        android:src="@drawable/ico_barras_write"
+        android:contentDescription="Menú"
+        android:elevation="4dp" />
+
+</RelativeLayout>
