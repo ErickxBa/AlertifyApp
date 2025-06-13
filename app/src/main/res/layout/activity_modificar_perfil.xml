@@ -111,7 +111,7 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/ico_user_black"
+                            android:src="@drawable/ico_user1"
                             android:layout_marginEnd="8dp" />
 
                         <EditText
@@ -127,7 +127,7 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/ico_editar_black"
+                            android:src="@drawable/ico_editar"
                             android:layout_marginStart="8dp" />
                     </LinearLayout>
 
