@@ -85,7 +85,7 @@ class LoginActivity : AppCompatActivity() {
 
         //Boton Prueba de Carga
         btnAction.setOnClickListener{
-            val intent = Intent(this, NotificacionesActivity::class.java)
+            val intent = Intent(this, ReseniasActivity::class.java)
             startActivity(intent)
         }
     }

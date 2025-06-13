@@ -35,5 +35,7 @@
     <string name="texto_ubicacióNotificacion">EPN</string>
     <string name="texto_mensaje_notificaciónDeRobo">Se ha reportado actividad sospechosa alrededor de tu sector</string>
     <string name="texto_boton_borrarTodo">Borrar todo</string>
+    <string name="open_drawer">Abrir menú lateral</string>
+    <string name="close_drawer">Cerrar menú lateral</string>
 
 </resources>
