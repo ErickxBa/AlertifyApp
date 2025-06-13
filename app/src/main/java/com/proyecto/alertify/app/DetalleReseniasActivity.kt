@@ -1,5 +1,6 @@
 package com.proyecto.alertify.app
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -8,32 +9,36 @@ import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 
-class ReseniasActivity : AppCompatActivity() {
-    private lateinit var btnVerResenas: Button
+class DetalleReseniasActivity : AppCompatActivity() {
+    private lateinit var btnRegresar: Button
+
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_resenias)
+        setContentView(R.layout.activity_detalle_resenias)
 
         val webView = findViewById<WebView>(R.id.webView)
         webView.settings.javaScriptEnabled = true
         webView.webViewClient = WebViewClient()
         webView.loadUrl("file:///android_asset/map.html")
 
-        btnVerResenas = findViewById(R.id.btnVerResenas)
+        btnRegresar = findViewById(R.id.btnRegresar)
 
         val btnMenu = findViewById<ImageButton>(R.id.btnMenu)
         btnMenu.setOnClickListener { view ->
             showPopupMenu(view)
         }
+        btnRegresar.setOnClickListener {
+            finish()
+        }
 
-        btnVerResenas.setOnClickListener {
-            val intent = Intent(this, DetalleReseniasActivity::class.java)
-            startActivity(intent)}
     }
-
     private fun showPopupMenu(anchor: View) {
         val popup = PopupMenu(this, anchor)
         popup.menuInflater.inflate(R.menu.menu_popup, popup.menu)
