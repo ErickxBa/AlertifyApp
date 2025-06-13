@@ -1,0 +1,32 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainScreen"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <ImageView
+        android:id="@+id/backgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="Fondo"
+        android:scaleType="centerCrop"
+        android:src="@drawable/background_login_image" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnStart"
+        android:layout_width="wrap_content"
+        android:layout_height="94dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="140dp"
+        android:layout_marginTop="675dp"
+        android:layout_marginEnd="136dp"
+        android:layout_marginBottom="122dp"
+        android:background="@drawable/boton_con_borde"
+        android:stateListAnimator="@null"
+        android:text="Comenzar"
+        android:textColor="@color/button_text_orange"
+        android:textSize="18sp" />
+</RelativeLayout>

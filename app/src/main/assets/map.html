@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mapa con zonas de peligro</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+  <style>
+    #map { height: 100vh; width: 100vw; }
+  </style>
+</head>
+<body>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+  // Mapa centrado, sin barra de zoom
+  var map = L.map('map', {
+    center: [-0.1807, -78.4678],
+    zoom: 13,
+    zoomControl: false  // DESACTIVA la barra de zoom
+  });
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  // Zona roja de peligro
+  var dangerZone = L.polygon([
+    [-0.175, -78.475],
+    [-0.175, -78.460],
+    [-0.190, -78.460],
+    [-0.190, -78.475]
+  ], {
+    color: 'red',
+    fillColor: 'red',
+    fillOpacity: 0.4
+  }).addTo(map).bindPopup('¡Esta zona es peligrosa!');
+
+  // Icono ladrón personalizado
+  var thiefIcon = L.icon({
+    iconUrl: 'thief_icon.png',
+    iconSize: [32, 37],
+    iconAnchor: [16, 37],
+    popupAnchor: [0, -37]
+  });
+
+  L.marker([-0.182, -78.467], {icon: thiefIcon})
+    .addTo(map)
+    .bindPopup('Zona con actividad sospechosa');
+</script>
+</body>
+</html>

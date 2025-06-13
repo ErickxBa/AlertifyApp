@@ -181,7 +181,7 @@
         app:layout_constraintHorizontal_bias="0.375"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.365" />
+        app:layout_constraintVertical_bias="0.382" />
 
     <TextView
         android:id="@+id/textView2"
@@ -189,8 +189,10 @@
         android:layout_height="wrap_content"
         android:text="@string/texto_LigaAportes"
         android:textSize="16sp"
-        tools:layout_editor_absoluteX="46dp"
-        tools:layout_editor_absoluteY="294dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.339"
+        tools:layout_editor_absoluteX="30dp" />
 
     <TextView
         android:id="@+id/textView3"
