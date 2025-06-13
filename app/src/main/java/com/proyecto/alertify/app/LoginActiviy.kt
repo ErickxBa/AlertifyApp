@@ -83,11 +83,11 @@ class LoginActivity : AppCompatActivity() {
             Toast.makeText(this, "Login con Google (pendiente)", Toast.LENGTH_SHORT).show()
         }
 
-        //Boton Prueba de Carga
+        /*Boton Prueba de Carga
         btnAction.setOnClickListener{
             val intent = Intent(this, ReseniasActivity::class.java)
             startActivity(intent)
-        }
+        }*/
     }
 
     private fun updateUIMode(toLoginMode: Boolean) {
