@@ -29,5 +29,11 @@
     <string name="texto_descuento_uber">Recibe descuento al pedir el servicio de Uber desde la app</string>
     <string name="texto_titulo_metro">Descuento en el Metro</string>
     <string name="texto_recompensa_metro">Recibe un 20% de descuento en pasajes del metro</string>
+    <string name="texto_tituloNotificaciones">Notificaciones</string>
+    <string name="texto_boton_verMapa_Notificacion">Ver Mapa</string>
+    <string name="texto_tituloDeUnaNotificacion">Alerta de Robos</string>
+    <string name="texto_ubicacióNotificacion">EPN</string>
+    <string name="texto_mensaje_notificaciónDeRobo">Se ha reportado actividad sospechosa alrededor de tu sector</string>
+    <string name="texto_boton_borrarTodo">Borrar todo</string>
 
 </resources>
