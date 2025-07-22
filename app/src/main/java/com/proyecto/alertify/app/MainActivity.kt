@@ -1,11 +1,10 @@
 package com.proyecto.alertify.app
-
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -33,7 +32,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
     }
 
-    @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         enableMyLocation() // Llama a la función para gestionar la ubicación
@@ -44,7 +42,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      * Si lo están, activa la capa de ubicación en el mapa.
      * Si no, solicita los permisos.
      */
-    @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+    @SuppressLint("MissingPermission")
     private fun enableMyLocation() {
         if (!::mMap.isInitialized) return // Si el mapa no está listo, no hagas nada
 
@@ -104,8 +102,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     private val locationPermissionRequest = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
-    )
-    @androidx.annotation.RequiresPermission(allOf = [android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION]) { isGranted: Boolean ->
+    ) { isGranted: Boolean ->
         if (isGranted) {
             // Si el usuario concede el permiso, activamos la capa de ubicación
             enableMyLocation()
