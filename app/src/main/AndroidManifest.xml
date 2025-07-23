@@ -38,9 +38,7 @@
         <activity
             android:name=".InicioRutaActivity"
             android:exported="false" />
-        <activity
-            android:name=".InicioActivity"
-            android:exported="false" />
+
         <activity
             android:name=".LoginActivity"
             android:exported="true" android:configChanges="orientation|keyboardHidden|screenSize"
