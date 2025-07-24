@@ -12,6 +12,7 @@ import android.renderscript.Allocation
 import android.renderscript.Element
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
+import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -20,9 +21,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class LoginActivity : AppCompatActivity() {
 
+    // Firebase Auth instance
+    private lateinit var auth: FirebaseAuth
+
+    // View references
     private lateinit var tvLoginTab: TextView
     private lateinit var tvRegisterTab: TextView
     private lateinit var etUsernameEmail: TextInputEditText
@@ -43,6 +51,9 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        // Initialize Firebase Auth [cite: 527]
+        auth = Firebase.auth
 
         // View references
         tvLoginTab = findViewById(R.id.tv_login_tab)
@@ -68,7 +79,11 @@ class LoginActivity : AppCompatActivity() {
 
         btnAction.setOnClickListener {
             hideKeyboard()
-            if (isLoginMode) performLogin() else performRegistration()
+            if (isLoginMode) {
+                performLogin()
+            } else {
+                performRegistration()
+            }
         }
 
         tvForgotPassword.setOnClickListener {
@@ -82,12 +97,6 @@ class LoginActivity : AppCompatActivity() {
         btnGoogleLogin.setOnClickListener {
             Toast.makeText(this, "Login con Google (pendiente)", Toast.LENGTH_SHORT).show()
         }
-
-        /*Boton Prueba de Carga
-        btnAction.setOnClickListener{
-            val intent = Intent(this, ReseniasActivity::class.java)
-            startActivity(intent)
-        }*/
     }
 
     private fun updateUIMode(toLoginMode: Boolean) {
@@ -114,37 +123,42 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun performLogin() {
-        val username = etUsernameEmail.text.toString().trim()
+        val email = etUsernameEmail.text.toString().trim()
         val password = etPassword.text.toString().trim()
 
-        if (username.isEmpty() || password.isEmpty()) {
+        if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Campos requeridos.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val prefs = getSharedPreferences("users", Context.MODE_PRIVATE)
-        val savedPassword = prefs.getString(username, null)
-
-        if (savedPassword == password) {
-            Toast.makeText(this, getString(R.string.welcome_message), Toast.LENGTH_SHORT).show()
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-        } else {
-            Toast.makeText(this, getString(R.string.error_invalid_credentials), Toast.LENGTH_SHORT).show()
-        }
+        // Firebase Authentication for login [cite: 556]
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task -> // [cite: 557]
+                if (task.isSuccessful) { // [cite: 558]
+                    // Sign in success
+                    Log.d("FIREBASE_AUTH", "signInWithEmail:success") // [cite: 559]
+                    Toast.makeText(this, getString(R.string.welcome_message), Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, MainActivity::class.java)) // [cite: 561, 563]
+                    finish() // [cite: 564]
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w("FIREBASE_AUTH", "signInWithEmail:failure", task.exception) // [cite: 566]
+                    Toast.makeText(baseContext, "Error: ${task.exception?.message}", Toast.LENGTH_SHORT).show() // [cite: 567]
+                }
+            }
     }
 
     private fun performRegistration() {
-        val username = etUsernameEmail.text.toString().trim()
+        val email = etUsernameEmail.text.toString().trim()
         val password = etPassword.text.toString().trim()
         val confirmPassword = etConfirmPassword.text.toString().trim()
 
-        if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+        if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             Toast.makeText(this, "Completa todos los campos.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        if (!Patterns.EMAIL_ADDRESS.matcher(username).matches()) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Toast.makeText(this, "Formato de correo inválido.", Toast.LENGTH_SHORT).show()
             return
         }
@@ -154,17 +168,23 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        val prefs = getSharedPreferences("users", Context.MODE_PRIVATE)
-        if (prefs.contains(username)) {
-            Toast.makeText(this, "Usuario ya registrado.", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        prefs.edit().putString(username, password).apply()
-
-        Toast.makeText(this, getString(R.string.registration_successful), Toast.LENGTH_SHORT).show()
-        updateUIMode(true)
+        // Firebase Authentication for new user registration [cite: 705]
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task -> // [cite: 706]
+                if (task.isSuccessful) { // [cite: 707]
+                    // Sign in success
+                    Log.d("FIREBASE_AUTH", "createUserWithEmail:success") // [cite: 709]
+                    Toast.makeText(baseContext, getString(R.string.registration_successful), Toast.LENGTH_SHORT).show() // [cite: 711]
+                    updateUIMode(true) // Switch back to login screen
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w("FIREBASE_AUTH", "createUserWithEmail:failure", task.exception) // [cite: 715]
+                    Toast.makeText(baseContext, "Falló el registro: ${task.exception?.message}", Toast.LENGTH_SHORT).show() // [cite: 716]
+                }
+            }
     }
+
+    // --- Helper functions from your original code (unchanged) ---
 
     private fun applyBlurToBackground() {
         val bitmap = BitmapFactory.decodeResource(resources, R.drawable.background_login_image)

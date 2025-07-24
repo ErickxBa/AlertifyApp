@@ -1,13 +1,17 @@
 import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.google.gms.google.services)
 }
+
 val localProperties = Properties()
 val localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
     localProperties.load(localPropertiesFile.inputStream())
 }
+
 android {
     namespace = "com.proyecto.alertify.app"
     compileSdk = 35
@@ -42,18 +46,26 @@ android {
 }
 
 dependencies {
-
+    // AndroidX & Material Design
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.play.services.maps)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    implementation(libs.play.services.maps.v1820)
+
+    // Google Play Services for Maps & Location
     implementation(libs.play.services.maps)
     implementation(libs.play.services.location)
 
+    // Firebase - Import the BoM (Bill of Materials)
+    implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
+
+    // Declare Firebase dependencies without versions
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-firestore-ktx")
+
+    // Testing
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }
