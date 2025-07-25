@@ -126,6 +126,7 @@ class LoginActivity : AppCompatActivity() {
         val savedPassword = prefs.getString(username, null)
 
         if (savedPassword == password) {
+            prefs.edit().putString("current_user", username).apply()
             Toast.makeText(this, getString(R.string.welcome_message), Toast.LENGTH_SHORT).show()
             startActivity(Intent(this, MainActivity::class.java))
             finish()

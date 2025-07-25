@@ -36,7 +36,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/icon_uber"
-                tools:srcCompat="@drawable/icon_notificacion" />
+                tools:srcCompat="@drawable/icon_alerta" />
 
             <TextView
                 android:id="@+id/textView13"
@@ -128,7 +128,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/icon_uber"
-                tools:srcCompat="@drawable/icon_notificacion" />
+                tools:srcCompat="@drawable/icon_alerta" />
 
             <TextView
                 android:id="@+id/textView13"
@@ -220,7 +220,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/icon_uber"
-                tools:srcCompat="@drawable/icon_notificacion" />
+                tools:srcCompat="@drawable/icon_alerta" />
 
             <TextView
                 android:id="@+id/textView13"
@@ -312,7 +312,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/icon_uber"
-                tools:srcCompat="@drawable/icon_notificacion" />
+                tools:srcCompat="@drawable/icon_alerta" />
 
             <TextView
                 android:id="@+id/textView13"
@@ -430,7 +430,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/icon_uber"
-                tools:srcCompat="@drawable/icon_notificacion" />
+                tools:srcCompat="@drawable/icon_alerta" />
 
             <TextView
                 android:id="@+id/textView13"
