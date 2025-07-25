@@ -2,12 +2,14 @@ package com.proyecto.alertify.app
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -15,6 +17,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -22,6 +26,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.navigation.NavigationView
 import java.util.Locale
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -76,8 +81,57 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun setupClickListeners() {
         val menuButton = findViewById<ImageButton>(R.id.menu_button)
+        val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
+        val navigationDrawer = findViewById<NavigationView>(R.id.navigation_drawer)
+
+        //boton para abrir el menu lateral
         menuButton.setOnClickListener {
-            Toast.makeText(this, "Menú lateral en desarrollo", Toast.LENGTH_SHORT).show()
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START)
+            } else {
+                drawerLayout.openDrawer(GravityCompat.START)
+            }
+        }
+
+        //Opciones del menu lateral
+        navigationDrawer.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.opcionInicio -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                R.id.opcionPerfil -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    Toast.makeText(this, "Ventana flotante en desarrollo", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                R.id.opcionNotificaciones -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    startActivity(Intent(this, NotificacionesActivity::class.java))
+                    true
+                }
+                R.id.opcionBeneficios -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    startActivity(Intent(this, RecompensasActivity::class.java))
+                    true
+                }
+                R.id.opcionZonasPeligrosas,
+                R.id.opcionRutaSegura -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    Toast.makeText(this, "Ventana flotante en desarrollo", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                R.id.opcionCerrarSesion -> {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    val prefs = getSharedPreferences("users", MODE_PRIVATE)
+                    prefs.edit().remove("current_user").apply()
+                    val intent = Intent(this, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    true
+                }
+                else -> false
+            }
         }
 
         val searchBar = findViewById<CardView>(R.id.search_bar)

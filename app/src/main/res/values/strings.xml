@@ -37,5 +37,9 @@
     <string name="texto_boton_borrarTodo">Borrar todo</string>
     <string name="open_drawer">Abrir menú lateral</string>
     <string name="close_drawer">Cerrar menú lateral</string>
-
+    <string name="title_inicio">Inicio</string>
+    <string name="title_zonas_peligrosas">Zonas peligrosas</string>
+    <string name="title_ruta_segura">Ruta segura</string>
+    <string name="title_cerrar_sesion">Cerrar Sesión</string>
+    <string name="title_perfil">Perfil</string>
 </resources>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/opcionInicio"
+        android:title="@string/title_inicio"
+        android:icon="@drawable/icon_home_menu"
+        android:tint="@null" />
+
+    <item
+        android:id="@+id/opcionPerfil"
+        android:title="@string/title_perfil"
+        android:icon="@drawable/icon_user_menu"
+        android:tint="@null"
+        app:actionLayout="@layout/menu_item_arrow" />
+
+    <item
+        android:id="@+id/opcionNotificaciones"
+        android:title="@string/texto_tituloNotificaciones"
+        android:icon="@drawable/icon_notification_menu"
+        android:tint="@null"
+        app:actionLayout="@layout/menu_item_arrow" />
+
+    <item
+        android:id="@+id/opcionBeneficios"
+        android:title="@string/texto_beneficios"
+        android:icon="@drawable/icono_recompensas_menu"
+        android:tint="@null"
+        app:actionLayout="@layout/menu_item_arrow" />
+
+    <item
+        android:id="@+id/opcionZonasPeligrosas"
+        android:title="@string/title_zonas_peligrosas"
+        android:icon="@drawable/icono_zonaspeligrosas_menu"
+        android:tint="@null"
+        app:actionLayout="@layout/menu_item_arrow" />
+
+    <item
+        android:id="@+id/opcionRutaSegura"
+        android:title="@string/title_ruta_segura"
+        android:icon="@drawable/icono_ruta_menu"
+        android:tint="@null"
+        app:actionLayout="@layout/menu_item_arrow" />
+
+    <item
+        android:id="@+id/opcionCerrarSesion"
+        android:title="@string/title_cerrar_sesion"
+        android:icon="@drawable/icono_cerrarsesion_menu"
+        android:tint="@null"
+        app:actionLayout="@layout/menu_item_arrow" />
+
+</menu>
