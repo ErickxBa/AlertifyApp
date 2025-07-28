@@ -1,5 +1,6 @@
 package com.proyecto.alertify.app
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -17,11 +18,18 @@ import android.util.Patterns
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
@@ -29,6 +37,10 @@ class LoginActivity : AppCompatActivity() {
 
     // Firebase Auth instance
     private lateinit var auth: FirebaseAuth
+
+    // Google Sign In Client
+    private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var googleSignInLauncher: ActivityResultLauncher<Intent>
 
     // View references
     private lateinit var tvLoginTab: TextView
@@ -54,6 +66,29 @@ class LoginActivity : AppCompatActivity() {
 
         // Initialize Firebase Auth [cite: 527]
         auth = Firebase.auth
+
+        // --- Integración de Google Sign-In ---
+        // 1. Configurar las opciones de Google Sign-In para solicitar un ID Token
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
+
+        // 2. Crear el lanzador para el resultado del inicio de sesión con Google
+        googleSignInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                try {
+                    val account = task.getResult(ApiException::class.java)!!
+                    firebaseAuthWithGoogle(account.idToken!!)
+                } catch (e: ApiException) {
+                    Log.w("FIREBASE_AUTH", "Google sign in failed", e)
+                    Toast.makeText(this, "Falló el inicio de sesión con Google", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        // --- Fin de la integración de Google ---
 
         // View references
         tvLoginTab = findViewById(R.id.tv_login_tab)
@@ -93,9 +128,9 @@ class LoginActivity : AppCompatActivity() {
         btnFacebookLogin.setOnClickListener {
             Toast.makeText(this, "Login con Facebook (pendiente)", Toast.LENGTH_SHORT).show()
         }
-
+        
         btnGoogleLogin.setOnClickListener {
-            Toast.makeText(this, "Login con Google (pendiente)", Toast.LENGTH_SHORT).show()
+            signInWithGoogle()
         }
     }
 
@@ -116,8 +151,10 @@ class LoginActivity : AppCompatActivity() {
 
         tilConfirmPassword.visibility = if (isLoginMode) View.GONE else View.VISIBLE
         tvForgotPassword.visibility = if (isLoginMode) View.VISIBLE else View.GONE
-        tvOrSeparator.visibility = if (isLoginMode) View.VISIBLE else View.GONE
-        llSocialLogins.visibility = if (isLoginMode) View.VISIBLE else View.GONE
+
+
+        tvOrSeparator.visibility = View.VISIBLE
+        llSocialLogins.visibility = View.VISIBLE
 
         btnAction.text = if (isLoginMode) getString(R.string.button_login) else getString(R.string.register_tab_text)
     }
@@ -131,21 +168,19 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        // Firebase Authentication for login [cite: 556]
+        // Firebase Authentication for login
         auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task -> // [cite: 557]
-                if (task.isSuccessful) { // [cite: 558]
-                    // Sign in success
-                    Log.d("FIREBASE_AUTH", "signInWithEmail:success") // [cite: 559]
-                    Toast.makeText(this, getString(R.string.welcome_message), Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, MainActivity::class.java)) // [cite: 561, 563]
-                    finish() // [cite: 564]
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w("FIREBASE_AUTH", "signInWithEmail:failure", task.exception) // [cite: 566]
-                    Toast.makeText(baseContext, "Error: ${task.exception?.message}", Toast.LENGTH_SHORT).show() // [cite: 567]
-                }
+       .addOnCompleteListener(this) { task ->
+            if (task.isSuccessful) {
+                Log.d("FIREBASE_AUTH", "signInWithEmail:success")
+                Toast.makeText(this, getString(R.string.welcome_message), Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
+            } else {
+                Log.w("FIREBASE_AUTH", "signInWithEmail:failure", task.exception)
+                Toast.makeText(baseContext, "Error: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
             }
+        }
     }
 
     private fun performRegistration() {
@@ -168,23 +203,45 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        // Firebase Authentication for new user registration [cite: 705]
+        // Firebase Authentication for new user registration
         auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task -> // [cite: 706]
-                if (task.isSuccessful) { // [cite: 707]
-                    // Sign in success
-                    Log.d("FIREBASE_AUTH", "createUserWithEmail:success") // [cite: 709]
-                    Toast.makeText(baseContext, getString(R.string.registration_successful), Toast.LENGTH_SHORT).show() // [cite: 711]
-                    updateUIMode(true) // Switch back to login screen
+        .addOnCompleteListener(this) { task ->
+            if (task.isSuccessful) {
+                Log.d("FIREBASE_AUTH", "createUserWithEmail:success")
+                Toast.makeText(baseContext, getString(R.string.registration_successful), Toast.LENGTH_SHORT).show()
+                updateUIMode(true)
+            } else {
+                Log.w("FIREBASE_AUTH", "createUserWithEmail:failure", task.exception)
+                Toast.makeText(baseContext, "Falló el registro: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    // --- Métodos para el flujo de Google Sign-In ---
+
+    private fun signInWithGoogle() {
+        val signInIntent = googleSignInClient.signInIntent
+        googleSignInLauncher.launch(signInIntent)
+    }
+
+    private fun firebaseAuthWithGoogle(idToken: String) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    Log.d("FIREBASE_AUTH", "signInWithCredential:success")
+                    Toast.makeText(this, getString(R.string.welcome_message), Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
                 } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w("FIREBASE_AUTH", "createUserWithEmail:failure", task.exception) // [cite: 715]
-                    Toast.makeText(baseContext, "Falló el registro: ${task.exception?.message}", Toast.LENGTH_SHORT).show() // [cite: 716]
+                    Log.w("FIREBASE_AUTH", "signInWithCredential:failure", task.exception)
+                    Toast.makeText(baseContext, "Falló la autenticación con Firebase.", Toast.LENGTH_SHORT).show()
                 }
             }
     }
 
-    // --- Helper functions from your original code (unchanged) ---
+
+
 
     private fun applyBlurToBackground() {
         val bitmap = BitmapFactory.decodeResource(resources, R.drawable.background_login_image)

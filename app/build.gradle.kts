@@ -1,5 +1,6 @@
 import java.util.Properties
 
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -58,11 +59,16 @@ dependencies {
     implementation(libs.play.services.location)
 
     // Firebase - Import the BoM (Bill of Materials)
-    implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
+    implementation(platform(libs.firebase.bom.v3311))
 
     // Declare Firebase dependencies without versions
-    implementation("com.google.firebase:firebase-auth-ktx")
-    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation(libs.google.firebase.auth.ktx)
+    implementation(libs.google.firebase.firestore.ktx)
+
+    // Google Play Services - Import the BoM
+    implementation(libs.play.services.location)
+    // Declare Play Services dependencies without versions
+    implementation(libs.play.services.auth)
 
     // Testing
     testImplementation(libs.junit)
