@@ -42,4 +42,8 @@
     <string name="title_ruta_segura">Ruta segura</string>
     <string name="title_cerrar_sesion">Cerrar Sesión</string>
     <string name="title_perfil">Perfil</string>
+    <string name="facebook_app_id">2293205851077432</string>
+    <string name="fb_login_protocol_scheme">fb2293205851077432</string>
+    <string name="facebook_client_token">1ee5b3383e74249ccaf8ffecce1d56cf</string>
+
 </resources>
