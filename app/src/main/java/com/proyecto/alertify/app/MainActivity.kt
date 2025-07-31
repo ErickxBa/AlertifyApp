@@ -19,6 +19,7 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.bumptech.glide.Glide
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -28,6 +29,9 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.navigation.NavigationView
 import java.util.Locale
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -35,13 +39,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
 
-    // --- NUEVAS VARIABLES PARA ACTUALIZACIONES CONTINUAS ---
+    // --- VARIABLES PARA FIREBASE Y UBICACIÓN ---
+    private lateinit var auth: FirebaseAuth
     private lateinit var locationCallback: LocationCallback
     private var isFirstLocationUpdate = true // Para centrar el mapa solo la primera vez
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Inicializa Firebase Auth
+        auth = Firebase.auth
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -50,7 +58,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         setupBottomSheet()
         setupClickListeners()
 
-        // --- INICIA EL PROCESO DE ACTUALIZACIÓN DE UBICACIÓN ---
+        // Muestra la información del usuario en el menú lateral
+        updateNavHeader()
+
+        // Inicia el proceso de actualización de ubicación
         createLocationCallback()
     }
 
@@ -73,18 +84,24 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         enableMyLocation()
     }
 
+    /**
+     * Configura el BottomSheet para que se pueda expandir y contraer.
+     */
     private fun setupBottomSheet() {
         val bottomSheetLayout = findViewById<LinearLayout>(R.id.bottom_sheet)
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
+    /**
+     * Configura todos los listeners de clics para los botones y el menú.
+     */
     private fun setupClickListeners() {
         val menuButton = findViewById<ImageButton>(R.id.menu_button)
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
         val navigationDrawer = findViewById<NavigationView>(R.id.navigation_drawer)
 
-        //boton para abrir el menu lateral
+        // Botón para abrir el menú lateral
         menuButton.setOnClickListener {
             if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                 drawerLayout.closeDrawer(GravityCompat.START)
@@ -93,38 +110,31 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
-        //Opciones del menu lateral
+        // Opciones del menú lateral
         navigationDrawer.setNavigationItemSelectedListener { menuItem ->
+            drawerLayout.closeDrawer(GravityCompat.START) // Cierra el menú al seleccionar una opción
             when (menuItem.itemId) {
-                R.id.opcionInicio -> {
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    true
-                }
+                R.id.opcionInicio -> true
                 R.id.opcionPerfil -> {
-                    drawerLayout.closeDrawer(GravityCompat.START)
                     Toast.makeText(this, "Ventana flotante en desarrollo", Toast.LENGTH_SHORT).show()
                     true
                 }
                 R.id.opcionNotificaciones -> {
-                    drawerLayout.closeDrawer(GravityCompat.START)
                     startActivity(Intent(this, NotificacionesActivity::class.java))
                     true
                 }
                 R.id.opcionBeneficios -> {
-                    drawerLayout.closeDrawer(GravityCompat.START)
                     startActivity(Intent(this, RecompensasActivity::class.java))
                     true
                 }
                 R.id.opcionZonasPeligrosas,
                 R.id.opcionRutaSegura -> {
-                    drawerLayout.closeDrawer(GravityCompat.START)
                     Toast.makeText(this, "Ventana flotante en desarrollo", Toast.LENGTH_SHORT).show()
                     true
                 }
                 R.id.opcionCerrarSesion -> {
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    val prefs = getSharedPreferences("users", MODE_PRIVATE)
-                    prefs.edit().remove("current_user").apply()
+                    // --- LÓGICA DE CERRAR SESIÓN CORREGIDA ---
+                    auth.signOut() // Cierra la sesión de Firebase
                     val intent = Intent(this, LoginActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)
@@ -140,6 +150,47 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    /**
+     * Actualiza la cabecera del menú de navegación con los datos del usuario logueado.
+     */
+    private fun updateNavHeader() {
+        val navigationView = findViewById<NavigationView>(R.id.navigation_drawer)
+        val headerView = navigationView.getHeaderView(0)
+        val navUsername = headerView.findViewById<TextView>(R.id.text_username)
+        val navUserEmail = headerView.findViewById<TextView>(R.id.text_email)
+        val navUserPhoto = headerView.findViewById<ImageView>(R.id.image_profile)
+
+        val currentUser = auth.currentUser
+
+        if (currentUser != null) {
+            navUsername.text = currentUser.displayName ?: "Usuario"
+            navUserEmail.text = currentUser.email
+
+            // --- INICIA LÓGICA CORREGIDA PARA LA FOTO DE PERFIL ---
+
+            // Variable para almacenar la URL de la foto
+            var photoUrl: String? = currentUser.photoUrl?.toString()
+
+            // Revisa los proveedores de la cuenta para encontrar el de Facebook
+            for (profile in currentUser.providerData) {
+                if (profile.providerId == "facebook.com") {
+                    // Si el proveedor es Facebook, construye la URL manualmente
+                    val facebookUserId = profile.uid
+                    photoUrl = "https://graph.facebook.com/$facebookUserId/picture?type=large"
+                    break // Sal del bucle una vez que encuentres el proveedor de Facebook
+                }
+            }
+
+            // Carga la foto de perfil con Glide usando la URL correcta
+            Glide.with(this)
+                .load(photoUrl)
+                .placeholder(R.drawable.ico_user1) // Usa tu ícono por defecto
+                .circleCrop()
+                .into(navUserPhoto)
+            // --- FIN DE LÓGICA CORREGIDA ---
+        }
+    }
+
     @SuppressLint("MissingPermission")
     private fun enableMyLocation() {
         if (!::mMap.isInitialized) return
@@ -151,23 +202,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    /**
-     * Define qué hacer cada vez que se recibe una nueva ubicación.
-     */
     private fun createLocationCallback() {
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 locationResult.lastLocation?.let { location ->
-                    // Cuando llega una nueva ubicación, actualiza la UI
                     updateLocationUI(location)
                 }
             }
         }
     }
 
-    /**
-     * Inicia la solicitud de actualizaciones de ubicación continuas.
-     */
     @SuppressLint("MissingPermission")
     private fun startLocationUpdates() {
         val locationRequest = LocationRequest.create().apply {
@@ -183,27 +227,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         )
     }
 
-    /**
-     * Detiene las actualizaciones de ubicación.
-     */
     private fun stopLocationUpdates() {
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
-    /**
-     * Actualiza tanto el mapa (solo la primera vez) como el TextView del BottomSheet.
-     */
     private fun updateLocationUI(location: Location) {
         if (!::mMap.isInitialized) return
 
-        // Centra el mapa solo en la primera actualización
         if (isFirstLocationUpdate) {
             val userLocation = LatLng(location.latitude, location.longitude)
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15f))
             isFirstLocationUpdate = false
         }
 
-        // Actualiza el TextView con la dirección (esto se hará en cada actualización)
         val geocoder = Geocoder(this, Locale.getDefault())
         try {
             val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
@@ -220,7 +256,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    // --- Funciones de gestión de permisos (sin cambios) ---
     private fun isLocationPermissionGranted() = ContextCompat.checkSelfPermission(
         this, Manifest.permission.ACCESS_FINE_LOCATION
     ) == PackageManager.PERMISSION_GRANTED

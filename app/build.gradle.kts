@@ -78,4 +78,8 @@ dependencies {
 
     //Facebook Services
     implementation(libs.facebook.login)
+
+
+    //Load Images
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 }
