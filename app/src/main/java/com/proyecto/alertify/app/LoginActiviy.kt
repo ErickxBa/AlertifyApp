@@ -40,7 +40,6 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
-import com.google.firebase.auth.FacebookAuthProvider
 
 /**
  * An activity that handles user authentication, providing options for
