@@ -22,6 +22,9 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -32,6 +35,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
+import com.google.firebase.auth.FacebookAuthProvider
 
 class LoginActivity : AppCompatActivity() {
 
@@ -41,6 +49,9 @@ class LoginActivity : AppCompatActivity() {
     // Google Sign In Client
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var googleSignInLauncher: ActivityResultLauncher<Intent>
+
+    // Facebook Callback Manager
+    private lateinit var callbackManager: CallbackManager
 
     // View references
     private lateinit var tvLoginTab: TextView
@@ -90,6 +101,23 @@ class LoginActivity : AppCompatActivity() {
         }
         // --- Fin de la integración de Google ---
 
+        // --- Integración de Facebook Login ---
+        callbackManager = CallbackManager.Factory.create()
+        LoginManager.getInstance().registerCallback(callbackManager, object :
+            FacebookCallback<LoginResult> {
+            override fun onSuccess(result: LoginResult) {
+                Log.d("FIREBASE_AUTH", "Facebook onSuccess")
+                firebaseAuthWithFacebook(result.accessToken)
+            }
+            override fun onCancel() {
+                Log.d("FIREBASE_AUTH", "Facebook onCancel")
+            }
+            override fun onError(error: FacebookException) {
+                Log.w("FIREBASE_AUTH", "Facebook onError", error)
+                Toast.makeText(baseContext, "Falló el inicio de sesión con Facebook.", Toast.LENGTH_SHORT).show()
+            }
+        })
+
         // View references
         tvLoginTab = findViewById(R.id.tv_login_tab)
         tvRegisterTab = findViewById(R.id.tv_register_tab)
@@ -126,14 +154,18 @@ class LoginActivity : AppCompatActivity() {
         }
 
         btnFacebookLogin.setOnClickListener {
-            Toast.makeText(this, "Login con Facebook (pendiente)", Toast.LENGTH_SHORT).show()
+            LoginManager.getInstance().logInWithReadPermissions(this, listOf("email", "public_profile"))
         }
-        
+
         btnGoogleLogin.setOnClickListener {
             signInWithGoogle()
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        callbackManager.onActivityResult(requestCode, resultCode, data)
+    }
     private fun updateUIMode(toLoginMode: Boolean) {
         isLoginMode = toLoginMode
 
@@ -240,7 +272,25 @@ class LoginActivity : AppCompatActivity() {
             }
     }
 
+    private fun firebaseAuthWithFacebook(token: com.facebook.AccessToken) {
+        val credential = FacebookAuthProvider.getCredential(token.token)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    navigateToMainActivity()
+                } else {
+                    Log.w("FIREBASE_AUTH", "signInWithCredential(Facebook):failure", task.exception)
+                    Toast.makeText(baseContext, "Falló la autenticación con Firebase.", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
 
+    private fun navigateToMainActivity() {
+        Log.d("FIREBASE_AUTH", "Authentication successful. Navigating to MainActivity.")
+        Toast.makeText(this, getString(R.string.welcome_message), Toast.LENGTH_SHORT).show()
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
+    }
 
 
     private fun applyBlurToBackground() {
@@ -281,3 +331,4 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 }
+
