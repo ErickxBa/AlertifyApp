@@ -1,0 +1,32 @@
+[
+  {
+    "type": "unsafe_zone",
+    "latitude": -0.1849,
+    "longitude": -78.482,
+    "radius": 250
+  },
+  {
+    "type": "unsafe_zone",
+    "latitude": -0.203,
+    "longitude": -78.5042,
+    "radius": 300
+  },
+  {
+    "type": "unsafe_zone",
+    "latitude": -0.225,
+    "longitude": -78.524,
+    "radius": 200
+  },
+  {
+    "type": "upc",
+    "latitude": -0.192,
+    "longitude": -78.49,
+    "radius": 150
+  },
+  {
+    "type": "upc",
+    "latitude": -0.209,
+    "longitude": -78.485,
+    "radius": 150
+  }
+]

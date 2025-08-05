@@ -33,13 +33,17 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
+import com.google.android.gms.maps.model.CircleOptions
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.io.InputStreamReader
+
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
 
-    // --- VARIABLES PARA FIREBASE Y UBICACIÓN ---
     private lateinit var auth: FirebaseAuth
     private lateinit var locationCallback: LocationCallback
     private var isFirstLocationUpdate = true // Para centrar el mapa solo la primera vez
@@ -82,6 +86,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         enableMyLocation()
+        addMapBubbles()
     }
 
     /**
@@ -254,6 +259,48 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             findViewById<TextView>(R.id.current_location_text).text = "Ubicación actual"
             e.printStackTrace()
         }
+    }
+
+    /**
+     * Lee el archivo locations.json desde assets, lo parsea y dibuja los círculos en el mapa.
+     */
+    private fun addMapBubbles() {
+        try {
+            val inputStream = assets.open("locations.json")
+            val reader = InputStreamReader(inputStream)
+            val mapPointType = object : TypeToken<List<MapPoint>>() {}.type
+            val points: List<MapPoint> = Gson().fromJson(reader, mapPointType)
+
+
+            points.forEach { point ->
+                drawCircleOnMap(point)
+            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Error al cargar las zonas", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /**
+     * Dibuja un único círculo en el mapa basado en un objeto MapPoint.
+     */
+    private fun drawCircleOnMap(point: MapPoint) {
+        val latLng = LatLng(point.latitude, point.longitude)
+        val fillColor = if (point.type == "unsafe_zone") {
+            ContextCompat.getColor(this, R.color.color_bubble_red)
+        } else {
+            ContextCompat.getColor(this, R.color.color_bubble_blue)
+        }
+
+        val circleOptions = CircleOptions()
+            .center(latLng)
+            .radius(point.radius) // El radio se define en metros
+            .fillColor(fillColor)
+            .strokeWidth(0f) // Sin borde para un look más limpio
+
+
+        mMap.addCircle(circleOptions)
     }
 
     private fun isLocationPermissionGranted() = ContextCompat.checkSelfPermission(
