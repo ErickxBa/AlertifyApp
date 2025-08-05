@@ -1,5 +1,5 @@
 [versions]
-agp = "8.11.1"
+agp = "8.12.0"
 facebookAndroidSdk = "[4,5)"
 facebookLogin = "18.1.3"
 firebaseBom = "34.0.0"
