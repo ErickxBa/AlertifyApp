@@ -45,5 +45,27 @@
     <string name="facebook_app_id">2293205851077432</string>
     <string name="fb_login_protocol_scheme">fb2293205851077432</string>
     <string name="facebook_client_token">1ee5b3383e74249ccaf8ffecce1d56cf</string>
+    <string name="toast_feature_in_progress">Ventana flotante en desarrollo</string>
+    <string name="toast_invalid_input">Por favor, ingresa origen y destino</string>
+    <string name="toast_route_cleared">Rutas eliminadas y campos limpiados</string>
+    <string name="default_username">Usuario</string>
+    <string name="toast_zone_load_error">Error al cargar las zonas</string>
+    <string name="toast_route_fetch_error">Error obteniendo ruta: %1$s</string>
+    <string name="toast_no_routes_found">No se encontraron rutas</string>
+    <string name="toast_route_displayed">Ruta mostrada</string>
+    <string name="toast_permission_rationale">La app necesita permisos de ubicación para mostrar tu posición.</string>
+    <string name="toast_permission_denied">Permiso de ubicación denegado.</string>
+    <string name="app_hint_origin">Tu ubicación actual o escribe una</string>
+    <string name="app_hint_destination">¿A dónde quieres ir?</string>
+    <string name="app_button_cancel">Cancelar</string>
+    <string name="app_button_start">Empezar</string>
+    <string name="error_fill_both_fields">Por favor completa ambos campos</string>
+    <string name="error_address_not_found">No se encontró la dirección</string>
+    <string name="error_getting_address">Error al obtener la dirección</string>
+    <string name="error_location_permission_denied">Permiso de ubicación denegado</string>
+    <string name="toast_searching_route">Buscando ruta de %1$s a %2$s...</string>
+    <string name="toast_current_location_unavailable">Ubicación actual no disponible</string>
+    <string name="error_empty_routes_response">Error: respuesta de rutas vacía</string>
+    <string name="title_enter_route">Ingrese la Ruta</string>
 
 </resources>
