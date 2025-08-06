@@ -8,6 +8,7 @@ import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
+import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -15,7 +16,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+    private lateinit var bottomSheetLayout: LinearLayout
 
     private lateinit var auth: FirebaseAuth
     private lateinit var locationCallback: LocationCallback
@@ -59,7 +60,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        setupBottomSheet()
+        bottomSheetLayout = findViewById(R.id.bottom_sheet_include)
+        setupBottomSheet()   // Inicializa y oculta el BottomSheet
         setupClickListeners()
 
         // Muestra la información del usuario en el menú lateral
@@ -88,14 +90,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         enableMyLocation()
         addMapBubbles()
     }
-
     /**
      * Configura el BottomSheet para que se pueda expandir y contraer.
+     * Además, lo oculta inicialmente.
      */
     private fun setupBottomSheet() {
-        val bottomSheetLayout = findViewById<LinearLayout>(R.id.bottom_sheet)
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        bottomSheetLayout.visibility = View.GONE
     }
 
     /**
@@ -132,9 +134,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     startActivity(Intent(this, RecompensasActivity::class.java))
                     true
                 }
-                R.id.opcionZonasPeligrosas,
-                R.id.opcionRutaSegura -> {
+                R.id.opcionZonasPeligrosas -> {
                     Toast.makeText(this, "Ventana flotante en desarrollo", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                R.id.opcionRutaSegura -> {
+                    // Aquí hacemos visible y expandimos el BottomSheet
+                    bottomSheetLayout.visibility = View.VISIBLE
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
                     true
                 }
                 R.id.opcionCerrarSesion -> {
@@ -147,11 +154,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
                 else -> false
             }
-        }
-
-        val searchBar = findViewById<CardView>(R.id.search_bar)
-        searchBar.setOnClickListener {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
     }
 
@@ -231,7 +233,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             Looper.getMainLooper()
         )
     }
-
     private fun stopLocationUpdates() {
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
@@ -248,15 +249,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val geocoder = Geocoder(this, Locale.getDefault())
         try {
             val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-            val currentLocationTextView = findViewById<TextView>(R.id.current_location_text)
-
             if (addresses != null && addresses.isNotEmpty()) {
-                currentLocationTextView.text = addresses[0].getAddressLine(0)
-            } else {
-                currentLocationTextView.text = "Ubicación actual"
+                val addressLine = addresses[0].getAddressLine(0)
             }
         } catch (e: Exception) {
-            findViewById<TextView>(R.id.current_location_text).text = "Ubicación actual"
             e.printStackTrace()
         }
     }

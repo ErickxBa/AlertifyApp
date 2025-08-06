@@ -3,150 +3,95 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bottom_sheet"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/rounded_rectangle1"
+    android:layout_height="400dp"
+    android:background="@color/color_fondo_reseña"
     android:orientation="vertical"
+    android:paddingTop="0dp"
     app:behavior_hideable="false"
-    app:behavior_peekHeight="90dp"
+    app:behavior_peekHeight="100dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
+    <View
+        android:layout_width="150dp"
+        android:layout_height="7dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="24dp"
+        android:background="@color/fondo_card_recompensas" />
+
+    <!-- ORIGEN -->
     <androidx.cardview.widget.CardView
-        android:id="@+id/search_bar"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
-        app:cardCornerRadius="28dp"
-        app:cardElevation="4dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ico_lupa"
-                app:tint="?android:attr/textColorHint" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:text="¿A dónde quieres ir?"
-                android:textSize="16sp" />
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
+        android:id="@+id/card_origin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="2dp">
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="8dp"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="16dp">
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="12dp">
 
             <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ico_pin"
-                app:tint="?attr/colorPrimary" />
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/ico_lupa" />
 
-            <TextView
-                android:id="@+id/current_location_text"
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/edit_origin"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:text="Obteniendo tu ubicación..."
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:hint="Tu ubicación actual o escribe una"
+                android:inputType="text"
                 android:textColor="?android:attr/textColorPrimary"
                 android:textSize="16sp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <LinearLayout
+    <!-- DESTINO -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_destination"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="16dp"
-        android:paddingTop="24dp"
-        android:paddingEnd="16dp">
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="16dp"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp">
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ico_reloj"
-            app:tint="@android:color/white" />
-
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="Lugar visitado recientemente, Pichincha"
-            android:textColor="@android:color/white"
-            android:textSize="16sp" />
-    </LinearLayout>
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="12dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="16dp"
-        android:paddingTop="16dp"
-        android:paddingEnd="16dp">
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/icon_ubicacion" />
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ico_pin"
-            app:tint="@android:color/white" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="Escuela Politécnica Nacional, Quito"
-            android:textColor="@android:color/white"
-            android:textSize="16sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="16dp"
-        android:paddingTop="16dp"
-        android:paddingEnd="16dp"
-        android:paddingBottom="24dp">
-
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ico_pin"
-            app:tint="@android:color/white" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="La Carolina, Quito"
-            android:textColor="@android:color/white"
-            android:textSize="16sp" />
-    </LinearLayout>
+            <EditText
+                android:id="@+id/edit_destination"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:hint="¿A dónde quieres ir?"
+                android:inputType="text"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
 </LinearLayout>

@@ -69,6 +69,9 @@ dependencies {
     implementation(libs.play.services.location)
     // Declare Play Services dependencies without versions
     implementation(libs.play.services.auth)
+    implementation(libs.places)
+    implementation(libs.okhttp)
+    implementation(libs.android.maps.utils)
 
     // Testing
     testImplementation(libs.junit)
