@@ -67,5 +67,5 @@
     <string name="toast_current_location_unavailable">Ubicación actual no disponible</string>
     <string name="error_empty_routes_response">Error: respuesta de rutas vacía</string>
     <string name="title_enter_route">Ingrese la Ruta</string>
-
+    <string name="rutas_encontradas">Rutas encontradas</string>
 </resources>

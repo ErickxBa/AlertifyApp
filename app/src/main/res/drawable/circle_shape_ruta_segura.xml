@@ -4,5 +4,5 @@
     <size
         android:width="12dp"
         android:height="12dp" />
-    <solid android:color="@color/card_background_translucent" /> <!-- Este color se sobrescribirá por tint -->
+    <solid android:color="@color/color_ruta_segura" /> <!-- Este color se sobrescribirá por tint -->
 </shape>

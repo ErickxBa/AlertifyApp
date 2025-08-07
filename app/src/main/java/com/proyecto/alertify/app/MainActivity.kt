@@ -44,8 +44,6 @@ import java.io.InputStreamReader
 import java.util.Locale
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
-import android.text.Editable
-import android.text.TextWatcher
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.*
@@ -69,6 +67,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var noHistoryText: TextView
     private val addressHistory = mutableListOf<AddressHistoryItem>()
     private lateinit var floatingLabels: LinearLayout
+    private lateinit var buttonCancel: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -248,7 +247,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun setupRouteButtons() {
         val buttonStart = findViewById<Button>(R.id.button_start_route)
-        val buttonCancel = findViewById<Button>(R.id.button_cancel_route)
+        buttonCancel = findViewById<Button>(R.id.button_cancel_route)
         val editOrigin = findViewById<EditText>(R.id.edit_origin)
         val editDestination = findViewById<EditText>(R.id.edit_destination)
 
@@ -442,7 +441,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     "&traffic_model=best_guess" +
                     "&key=$apiKey",
 
-            // Intento 2: Rutas evitando autopistas (para más opciones locales)
+            // Intento 2: Rutas evitando autopistas
             "https://maps.googleapis.com/maps/api/directions/json" +
                     "?origin=$resolvedOrigin" +
                     "&destination=$resolvedDestination" +
@@ -632,7 +631,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         Toast.makeText(
             this,
-            "Rutas mostradas desde $source: ${routePolylines.size}",
+            getString(R.string.rutas_encontradas),
             Toast.LENGTH_SHORT
         ).show()
     }
@@ -680,6 +679,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             drawerLayout.closeDrawer(GravityCompat.START)
             when (menuItem.itemId) {
                 R.id.opcionInicio ->{
+                    buttonCancel.performClick()
                     bottomSheetLayout.visibility = View.GONE
                     setRouteLabelsVisible(false)
                     true

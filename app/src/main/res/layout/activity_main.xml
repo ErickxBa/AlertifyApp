@@ -38,7 +38,7 @@
                     android:layout_height="12dp"
                     android:layout_marginEnd="8dp"
                     android:backgroundTint="@color/color_ruta_segura"
-                    android:src="@drawable/circle_shape" />
+                    android:src="@drawable/circle_shape_ruta_segura" />
 
                 <TextView
                     android:id="@+id/label_segura"
@@ -63,7 +63,7 @@
                     android:layout_height="12dp"
                     android:layout_marginEnd="8dp"
                     android:backgroundTint="@color/color_ruta_insegura"
-                    android:src="@drawable/circle_shape" />
+                    android:src="@drawable/circular_red_background" />
 
                 <TextView
                     android:id="@+id/label_insegura"
@@ -87,7 +87,7 @@
                     android:layout_height="12dp"
                     android:layout_marginEnd="8dp"
                     android:backgroundTint="@color/color_ruta_alternativa"
-                    android:src="@drawable/circle_shape" />
+                    android:src="@drawable/circular_green_background" />
 
                 <TextView
                     android:id="@+id/label_adicional"
