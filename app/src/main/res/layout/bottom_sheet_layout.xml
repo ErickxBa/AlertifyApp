@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bottom_sheet"
     android:layout_width="match_parent"
-    android:layout_height="400dp"
+    android:layout_height="600dp"
     android:background="@color/color_fondo_reseña"
     android:orientation="vertical"
     android:paddingTop="0dp"
@@ -40,7 +40,6 @@
         app:cardBackgroundColor="@android:color/white"
         app:cardCornerRadius="12dp"
         app:cardElevation="4dp">
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -48,12 +47,10 @@
             android:orientation="horizontal"
             android:paddingHorizontal="16dp"
             android:paddingVertical="12dp">
-
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:src="@drawable/ico_lupa" />
-
             <EditText
                 android:id="@+id/edit_origin"
                 android:layout_width="0dp"
@@ -61,12 +58,25 @@
                 android:layout_marginStart="16dp"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:hint="@string/app_hint_origin"
+                android:hint="Escribe tu ubicación de origen..."
                 android:inputType="text"
                 android:textColor="?android:attr/textColorPrimary"
                 android:textSize="16sp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
+
+    <!-- SUGERENCIAS DE ORIGEN -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_origin_suggestions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="8dp"
+        android:background="@android:color/white"
+        android:elevation="8dp"
+        android:visibility="gone"
+        android:maxHeight="200dp"
+        app:cardCornerRadius="12dp" />
 
     <!-- DESTINO -->
     <androidx.cardview.widget.CardView
@@ -74,11 +84,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         app:cardBackgroundColor="@android:color/white"
         app:cardCornerRadius="12dp"
         app:cardElevation="4dp">
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -86,12 +95,10 @@
             android:orientation="horizontal"
             android:paddingHorizontal="16dp"
             android:paddingVertical="12dp">
-
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:src="@drawable/icon_ubicacion" />
-
             <EditText
                 android:id="@+id/edit_destination"
                 android:layout_width="0dp"
@@ -99,14 +106,27 @@
                 android:layout_marginStart="16dp"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:hint="@string/app_hint_destination"
+                android:hint="Escribe tu destino..."
                 android:inputType="text"
                 android:textColor="?android:attr/textColorPrimary"
                 android:textSize="16sp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- NUEVO: Botones Empezar y Cancelar -->
+    <!-- SUGERENCIAS DE DESTINO -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_destination_suggestions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@android:color/white"
+        android:elevation="8dp"
+        android:visibility="gone"
+        android:maxHeight="200dp"
+        app:cardCornerRadius="12dp" />
+
+    <!-- BOTONES -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -115,7 +135,6 @@
         android:gravity="center"
         android:weightSum="2"
         android:layout_marginBottom="16dp">
-
         <Button
             android:id="@+id/button_cancel_route"
             android:layout_width="0dp"
@@ -125,7 +144,6 @@
             android:backgroundTint="@color/boton_recompensas"
             android:textColor="@color/button_background_black"
             android:layout_marginStart="8dp" />
-
         <Button
             android:id="@+id/button_start_route"
             android:layout_width="0dp"
@@ -134,8 +152,80 @@
             android:text="@string/app_button_start"
             android:layout_marginEnd="8dp"
             android:backgroundTint="@color/boton_recompensas"
-            android:textColor="@color/button_background_black"
-            />
+            android:textColor="@color/button_background_black" />
+    </LinearLayout>
+
+    <!-- SEPARADOR -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@color/fondo_card_recompensas" />
+
+    <!-- SECCIÓN DE HISTORIAL -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginHorizontal="16dp">
+
+        <!-- TÍTULO DEL HISTORIAL -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="12dp">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ico_lupa"
+                android:tint="@color/white"
+                android:layout_marginEnd="8dp" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Direcciones Recientes"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/text_clear_history"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Limpiar"
+                android:textColor="@color/boton_recompensas"
+                android:textSize="14sp"
+                android:padding="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?android:attr/selectableItemBackground" />
+        </LinearLayout>
+
+        <!-- LISTA DE HISTORIAL -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_address_history"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxHeight="150dp"
+            android:scrollbars="vertical"
+            android:layout_marginBottom="16dp" />
+
+        <!-- MENSAJE CUANDO NO HAY HISTORIAL -->
+        <TextView
+            android:id="@+id/text_no_history"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No hay direcciones en el historial"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:padding="16dp"
+            android:visibility="gone"
+            android:alpha="0.7" />
+
     </LinearLayout>
 
 </LinearLayout>

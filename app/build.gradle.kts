@@ -72,6 +72,9 @@ dependencies {
     implementation(libs.places)
     implementation(libs.okhttp)
     implementation(libs.android.maps.utils)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.androidx.recyclerview)
 
     // Testing
     testImplementation(libs.junit)
