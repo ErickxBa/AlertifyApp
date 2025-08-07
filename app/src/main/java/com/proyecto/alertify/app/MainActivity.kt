@@ -55,6 +55,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private var isFirstLocationUpdate = true
     private var routePolylines = mutableListOf<Polyline>()
     private lateinit var lastKnownLatLng: LatLng
+    private lateinit var floatingLabels: LinearLayout
+    private lateinit var buttonCancel: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,6 +67,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+        floatingLabels = findViewById(R.id.floating_route_labels)
 
         bottomSheetLayout = findViewById(R.id.bottom_sheet_include)
 
@@ -78,7 +81,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     /** Configura los botones para iniciar y cancelar la ruta */
     private fun setupRouteButtons() {
         val buttonStart = findViewById<Button>(R.id.button_start_route)
-        val buttonCancel = findViewById<Button>(R.id.button_cancel_route)
+        buttonCancel = findViewById<Button>(R.id.button_cancel_route)
         val editOrigin = findViewById<EditText>(R.id.edit_origin)
         val editDestination = findViewById<EditText>(R.id.edit_destination)
 
@@ -96,6 +99,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
             Toast.makeText(this, getString(R.string.toast_searching_route, origin, destination), Toast.LENGTH_SHORT).show()
             fetchAndDrawRoutes(origin, destination)
+            setRouteLabelsVisible(true)
         }
 
         buttonCancel.setOnClickListener {
@@ -104,6 +108,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             clearRoutes()
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             Toast.makeText(this, getString(R.string.toast_route_cleared), Toast.LENGTH_SHORT).show()
+            setRouteLabelsVisible(false)
         }
     }
 
@@ -166,7 +171,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         navigationDrawer.setNavigationItemSelectedListener { menuItem ->
             drawerLayout.closeDrawer(GravityCompat.START)
             when (menuItem.itemId) {
-                R.id.opcionInicio -> true
+                R.id.opcionInicio -> {
+                    buttonCancel.performClick()
+                    bottomSheetLayout.visibility = View.GONE
+                    setRouteLabelsVisible(false)
+                    true
+                }
                 R.id.opcionPerfil -> {
                     Toast.makeText(this, getString(R.string.toast_feature_in_progress), Toast.LENGTH_SHORT).show()
                     true
@@ -189,12 +199,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     true
                 }
                 R.id.opcionCerrarSesion -> {
+                    Log.d("AUTH", "Cerrar sesión iniciada")
                     auth.signOut()
+                    Log.d("AUTH", "Usuario tras signOut: ${auth.currentUser}") // debería ser null
                     val intent = Intent(this, LoginActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)
+                    finish()
                     true
                 }
+
                 else -> false
             }
         }
@@ -382,7 +396,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 "?origin=$resolvedOrigin" +
                 "&destination=$resolvedDestination" +
                 "&alternatives=true" +
-                "&mode=driving" +
+                "&mode=walking" +
                 "&key=$apiKey"
 
         val request = Request.Builder().url(url).build()
@@ -403,8 +417,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                Log.d("MainActivity", "Respuesta API Directions: $responseBody")
-
                 if (responseBody == null) {
                     runOnUiThread {
                         Toast.makeText(this@MainActivity, getString(R.string.error_empty_routes_response), Toast.LENGTH_SHORT).show()
@@ -418,7 +430,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (routes == null || routes.length() == 0) {
                     runOnUiThread {
                         Toast.makeText(this@MainActivity, getString(R.string.toast_no_routes_found), Toast.LENGTH_SHORT).show()
-                        Log.w("MainActivity", "No routes found in response")
                     }
                     return
                 }
@@ -467,5 +478,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun clearRoutes() {
         routePolylines.forEach { it.remove() }
         routePolylines.clear()
+    }
+
+    /** Mostrar solo si hay ruta activa */
+    fun setRouteLabelsVisible(visible: Boolean) {
+        floatingLabels.visibility = if (visible) View.VISIBLE else View.GONE
     }
 }

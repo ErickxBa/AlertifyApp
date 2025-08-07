@@ -29,7 +29,6 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="16dp"
         android:textStyle="bold" />
-
     <!-- ORIGEN -->
     <androidx.cardview.widget.CardView
         android:id="@+id/card_origin"

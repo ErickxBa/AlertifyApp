@@ -88,6 +88,12 @@ class LoginActivity : AppCompatActivity() {
         // Initialize Firebase Auth.
         auth = Firebase.auth
 
+        // Si el usuario ya está autenticado, redirige al MainActivity
+        if (auth.currentUser != null) {
+            navigateToMainActivity()
+            return
+        }
+
         // --- Google Sign-In Integration ---
         // 1. Configure Google Sign-In options to request an ID Token and user's email.
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
