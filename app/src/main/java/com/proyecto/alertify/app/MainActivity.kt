@@ -64,13 +64,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private val apiKey = "AIzaSyDCnE4BWWrfuuGaxVEKH1TmixIS0qq94Dk"
     private val TAG = "GeocodingActivity"
     private var searchJob: Job? = null
-    private lateinit var originRecyclerView: RecyclerView
-    private lateinit var destinationRecyclerView: RecyclerView
 
     private lateinit var addressHistoryAdapter: AddressHistoryAdapter
     private lateinit var historyRecyclerView: RecyclerView
     private lateinit var noHistoryText: TextView
     private val addressHistory = mutableListOf<AddressHistoryItem>()
+    private lateinit var floatingLabels: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,6 +79,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        floatingLabels = findViewById(R.id.floating_route_labels)
         mapFragment.getMapAsync(this)
 
         bottomSheetLayout = findViewById(R.id.bottom_sheet_include)
@@ -91,7 +91,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         createLocationCallback()
     }
 
-    // Nuevo método para configurar la sección de historial
     private fun setupHistorySection() {
         historyRecyclerView = findViewById(R.id.recycler_address_history)
         noHistoryText = findViewById(R.id.text_no_history)
@@ -108,27 +107,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 editOrigin -> {
                     editOrigin.setText(addressItem.address)
                     editOrigin.setSelection(editOrigin.text.length)
-                    Toast.makeText(this, "Origen cargado desde historial", Toast.LENGTH_SHORT).show()
                 }
                 editDestination -> {
                     editDestination.setText(addressItem.address)
                     editDestination.setSelection(editDestination.text.length)
-                    Toast.makeText(this, "Destino cargado desde historial", Toast.LENGTH_SHORT).show()
-                }
-                else -> {
-                    // Si ninguno está enfocado, puedes usar el tipo como fallback
-                    when (addressItem.type) {
-                        "origin" -> {
-                            editOrigin.setText(addressItem.address)
-                            editOrigin.setSelection(editOrigin.text.length)
-                            Toast.makeText(this, "Origen cargado desde historial", Toast.LENGTH_SHORT).show()
-                        }
-                        "destination" -> {
-                            editDestination.setText(addressItem.address)
-                            editDestination.setSelection(editDestination.text.length)
-                            Toast.makeText(this, "Destino cargado desde historial", Toast.LENGTH_SHORT).show()
-                        }
-                    }
                 }
             }
         }
@@ -161,20 +143,27 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun addAddressToHistory(address: String, type: String) {
-        if (address.trim().isEmpty() || address.contains("actual", ignoreCase = true)) {
-            return // No agregar direcciones vacías o "ubicación actual"
+        val cleanAddress = address.trim()
+        if (cleanAddress.isEmpty() || cleanAddress.contains("actual", ignoreCase = true)) {
+            return
+        }
+
+        // Validar que no exista ya la dirección en el historial
+        val alreadyExists = addressHistory.any { it.address == cleanAddress }
+        if (alreadyExists) {
+            return
         }
 
         val timestamp = getRelativeTime()
         val historyItem = AddressHistoryItem(
-            address = address.trim(),
+            address = cleanAddress,
             timestamp = timestamp,
-            type = type
         )
 
         addressHistoryAdapter.addAddress(historyItem)
         updateHistoryVisibility()
     }
+
 
     private fun getRelativeTime(): String {
         val now = System.currentTimeMillis()
@@ -192,8 +181,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val editOrigin = findViewById<EditText>(R.id.edit_origin)
         val editDestination = findViewById<EditText>(R.id.edit_destination)
-        editOrigin.hint = "Escribe tu ubicación de origen..."
-        editDestination.hint = "Escribe tu destino..."
+        editOrigin.hint = "Ingresa tu ubicación de origen"
+        editDestination.hint = "Ingresa tu destino"
 
         val expandOnFocusListener = View.OnFocusChangeListener { _, hasFocus ->
             if (hasFocus && bottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
@@ -242,11 +231,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     return@geocodeAddress
                 }
 
-                Log.d(
-                    TAG,
-                    "Origen geocodificado exitosamente: $originText -> Lat: ${originLatLng.latitude}, Lng: ${originLatLng.longitude}"
-                )
-
                 geocodeAddress(destinationText) { destinationLatLng ->
                     if (destinationLatLng == null) {
                         Log.e(TAG, "Error: No se pudo geocodificar el destino: $destinationText")
@@ -267,6 +251,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     )
                 }
             }
+            setRouteLabelsVisible(true)
         }
 
         buttonCancel.setOnClickListener {
@@ -275,9 +260,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             clearRoutes()
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             Toast.makeText(this, getString(R.string.toast_route_cleared), Toast.LENGTH_SHORT).show()
+            setRouteLabelsVisible(false)
         }
     }
-    // NUEVA VERSIÓN MEJORADA DE Routes API con más opciones
+
+
     private fun fetchRoutesApiRoutesImproved(
         origin: LatLng,
         destination: LatLng,
@@ -497,8 +484,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Definir exactamente 3 colores específicos
         val routeColors = listOf(
-            Triple(ContextCompat.getColor(this, R.color.color_ruta_segura), 12f, "Ruta 1 (Azul)"),
-            Triple(ContextCompat.getColor(this, android.R.color.holo_blue_bright), 14f, "Ruta 2 (Azul Seguro)"),
+            Triple(ContextCompat.getColor(this, R.color.boton_recompensas), 12f, "Ruta 1 (Azul)"),
+            Triple(ContextCompat.getColor(this, R.color.color_ruta_segura), 14f, "Ruta 2 (Azul Seguro)"),
             Triple(ContextCompat.getColor(this, R.color.color_ruta_insegura), 10f, "Ruta 3 (Roja)")
         )
 
@@ -629,28 +616,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         addMapBubbles()
     }
 
-    /** Configura el BottomSheet con hints y comportamiento de expansión */
-    private fun setupBottomSheet() {
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout)
-        val density = resources.displayMetrics.density
-        bottomSheetBehavior.peekHeight = (150 * density).toInt()
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        bottomSheetLayout.visibility = View.GONE
-
-        val editOrigin = findViewById<EditText>(R.id.edit_origin)
-        val editDestination = findViewById<EditText>(R.id.edit_destination)
-        editOrigin.hint = getString(R.string.app_hint_origin)
-        editDestination.hint = getString(R.string.app_hint_destination)
-
-        val expandOnFocusListener = View.OnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && bottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-            }
-        }
-        editOrigin.onFocusChangeListener = expandOnFocusListener
-        editDestination.onFocusChangeListener = expandOnFocusListener
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         searchJob?.cancel()
@@ -672,7 +637,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         navigationDrawer.setNavigationItemSelectedListener { menuItem ->
             drawerLayout.closeDrawer(GravityCompat.START)
             when (menuItem.itemId) {
-                R.id.opcionInicio -> true
+                R.id.opcionInicio ->{
+                    bottomSheetLayout.visibility = View.GONE
+                    setRouteLabelsVisible(false)
+                    true
+                }
                 R.id.opcionPerfil -> {
                     Toast.makeText(
                         this,
@@ -910,5 +879,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun clearRoutes() {
         routePolylines.forEach { it.remove() }
         routePolylines.clear()
+    }
+
+    // Mostrar solo si hay ruta activa
+    fun setRouteLabelsVisible(visible: Boolean) {
+        floatingLabels.visibility = if (visible) View.VISIBLE else View.GONE
     }
 }

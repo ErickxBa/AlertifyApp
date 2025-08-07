@@ -12,6 +12,96 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <LinearLayout
+            android:id="@+id/floating_route_labels"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:layout_marginTop="100dp"
+            android:layout_marginStart="16dp"
+            android:visibility="gone"
+            android:background="@color/fondo_boton_2"
+            android:elevation="6dp"
+            android:layout_gravity="start|top">
+
+            <!-- Etiqueta Segura -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="4dp"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginEnd="8dp"
+                    android:backgroundTint="@color/color_ruta_segura"
+                    android:src="@drawable/circle_shape" />
+
+                <TextView
+                    android:id="@+id/label_segura"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Segura"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
+            </LinearLayout>
+
+            <!-- Etiqueta Insegura -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="4dp"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginEnd="8dp"
+                    android:backgroundTint="@color/color_ruta_insegura"
+                    android:src="@drawable/circle_shape" />
+
+                <TextView
+                    android:id="@+id/label_insegura"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Insegura"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
+            </LinearLayout>
+
+            <!-- Etiqueta Adicional -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginEnd="8dp"
+                    android:backgroundTint="@color/color_ruta_alternativa"
+                    android:src="@drawable/circle_shape" />
+
+                <TextView
+                    android:id="@+id/label_adicional"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Adicional"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    android:padding="4dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+
         <ImageButton
             android:id="@+id/menu_button"
             android:layout_width="60dp"
@@ -33,6 +123,8 @@
             android:id="@+id/bottom_sheet_include"
             android:visibility="gone"
             layout="@layout/bottom_sheet_layout" />
+
+
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

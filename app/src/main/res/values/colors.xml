@@ -18,4 +18,5 @@
     <color name="color_bubble_blue">#550000FF</color>
     <color name="color_ruta_insegura">#e71224</color>
     <color name="color_ruta_segura">#004f8b</color>
+    <color name="color_ruta_alternativa">#4CAF50</color>
 </resources>
