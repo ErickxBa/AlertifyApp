@@ -29,6 +29,12 @@ class AddressHistoryAdapter(
     private val onItemClick: (AddressHistoryItem) -> Unit
 ) : RecyclerView.Adapter<AddressHistoryAdapter.HistoryViewHolder>() {
 
+    // Ítem especial "Mi ubicación"
+    private val myLocationItem = AddressHistoryItem(
+        address = "Mi ubicación",
+        timestamp = "" // sin timestamp
+    )
+
     /**
      * ViewHolder que contiene las referencias a las vistas de un ítem.
      */
@@ -53,20 +59,31 @@ class AddressHistoryAdapter(
      * @param position Posición del ítem en la lista.
      */
     override fun onBindViewHolder(holder: HistoryViewHolder, position: Int) {
-        val item = historyList[position]
-        holder.textAddress.text = item.address
-        holder.textTime.text = item.timestamp
+        if (position == 0) {
+            // Ítem fijo "Mi ubicación"
+            holder.textAddress.text = myLocationItem.address
+            holder.textTime.visibility = View.GONE
 
-        // Configurar click para el ítem
-        holder.itemView.setOnClickListener {
-            onItemClick(item)
+            holder.itemView.setOnClickListener {
+                onItemClick(myLocationItem)
+            }
+        } else {
+            // Ítems normales del historial
+            val item = historyList[position - 1]
+            holder.textAddress.text = item.address
+            holder.textTime.text = item.timestamp
+            holder.textTime.visibility = View.VISIBLE
+
+            holder.itemView.setOnClickListener {
+                onItemClick(item)
+            }
         }
     }
 
     /**
      * Retorna la cantidad total de ítems en la lista.
      */
-    override fun getItemCount(): Int = historyList.size
+    override fun getItemCount(): Int = historyList.size + 1
 
     /**
      * Agrega una nueva dirección al inicio de la lista si no existe ya (evita duplicados por dirección).
@@ -75,20 +92,20 @@ class AddressHistoryAdapter(
      * @param address Nueva dirección a agregar.
      */
     fun addAddress(address: AddressHistoryItem) {
-        // Verificar si la dirección ya está en la lista (ignorando tipo)
+        // No agregar "Mi ubicación"
+        if (address.address == myLocationItem.address) return
+
         val isDuplicate = historyList.any { it.address == address.address }
         if (isDuplicate) return
 
-        // Mantener máximo 15 elementos: eliminar último si ya hay 15 o más
         if (historyList.size >= 15) {
             val lastIndex = historyList.size - 1
             historyList.removeAt(lastIndex)
-            notifyItemRemoved(lastIndex)
+            notifyItemRemoved(lastIndex + 1)
         }
 
-        // Agregar nuevo ítem al inicio y notificar inserción
         historyList.add(0, address)
-        notifyItemInserted(0)
+        notifyItemInserted(1) // posición 1, después de "Mi ubicación"
     }
 
     /**

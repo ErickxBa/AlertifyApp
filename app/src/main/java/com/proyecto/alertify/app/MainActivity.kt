@@ -64,7 +64,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private val apiKey = "AIzaSyDCnE4BWWrfuuGaxVEKH1TmixIS0qq94Dk"
     private val TAG = "GeocodingActivity"
     private var searchJob: Job? = null
-
     private lateinit var addressHistoryAdapter: AddressHistoryAdapter
     private lateinit var historyRecyclerView: RecyclerView
     private lateinit var noHistoryText: TextView
@@ -97,23 +96,39 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val clearHistoryText = findViewById<TextView>(R.id.text_clear_history)
 
         // Configurar adapter del historial
-        addressHistoryAdapter = AddressHistoryAdapter(addressHistory) { addressItem ->
-            val editOrigin = findViewById<EditText>(R.id.edit_origin)
-            val editDestination = findViewById<EditText>(R.id.edit_destination)
+            addressHistoryAdapter = AddressHistoryAdapter(addressHistory) { addressItem ->
+                val editOrigin = findViewById<EditText>(R.id.edit_origin)
+                val editDestination = findViewById<EditText>(R.id.edit_destination)
 
-            val focusedView = currentFocus
+                val focusedView = currentFocus
 
-            when (focusedView) {
-                editOrigin -> {
-                    editOrigin.setText(addressItem.address)
-                    editOrigin.setSelection(editOrigin.text.length)
-                }
-                editDestination -> {
-                    editDestination.setText(addressItem.address)
-                    editDestination.setSelection(editDestination.text.length)
+                if (addressItem.address == "Mi ubicación") {
+                    // Obtener ubicación actual
+                    getCurrentLocationAndSetAddress { currentAddress ->
+                        when (focusedView) {
+                            editOrigin -> {
+                                editOrigin.setText(currentAddress)
+                                editOrigin.setSelection(editOrigin.text.length)
+                            }
+                            editDestination -> {
+                                editDestination.setText(currentAddress)
+                                editDestination.setSelection(editDestination.text.length)
+                            }
+                        }
+                    }
+                } else {
+                    when (focusedView) {
+                        editOrigin -> {
+                            editOrigin.setText(addressItem.address)
+                            editOrigin.setSelection(editOrigin.text.length)
+                        }
+                        editDestination -> {
+                            editDestination.setText(addressItem.address)
+                            editDestination.setSelection(editDestination.text.length)
+                        }
+                    }
                 }
             }
-        }
 
         historyRecyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
@@ -128,7 +143,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 Toast.makeText(this, "Historial limpiado", Toast.LENGTH_SHORT).show()
             }
         }
-
         updateHistoryVisibility()
     }
 
@@ -171,7 +185,46 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         return format.format(Date(now))
     }
 
-    // Modificar setupBottomSheet para incluir el autocompletado
+    private fun getCurrentLocationAndSetAddress(onAddressReady: (String) -> Unit) {
+        // Verificar permisos antes de acceder a la ubicación
+        if (!isLocationPermissionGranted()) {
+            onAddressReady("Permisos de ubicación requeridos")
+            return
+        }
+
+        // Si tenemos permisos, proceder con la obtención de ubicación
+        val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+
+        try {
+            fusedLocationProviderClient.lastLocation
+                .addOnSuccessListener { location ->
+                    if (location != null) {
+                        try {
+                            val geocoder = Geocoder(this, Locale.getDefault())
+                            val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+                            if (!addresses.isNullOrEmpty()) {
+                                val addressLine = addresses[0].getAddressLine(0)
+                                onAddressReady(addressLine)
+                            } else {
+                                onAddressReady("Ubicación desconocida")
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            onAddressReady("Ubicación desconocida")
+                        }
+                    } else {
+                        onAddressReady("Ubicación no disponible")
+                    }
+                }
+                .addOnFailureListener {
+                    onAddressReady("Error al obtener ubicación")
+                }
+        } catch (e: SecurityException) {
+            e.printStackTrace()
+            onAddressReady("Error de permisos de ubicación")
+        }
+    }
+
     private fun setupBottomSheetWithAutocomplete() {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout)
         val density = resources.displayMetrics.density
@@ -193,7 +246,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         editDestination.onFocusChangeListener = expandOnFocusListener
     }
 
-    // Modificar setupRouteButtons para agregar direcciones al historial
     private fun setupRouteButtons() {
         val buttonStart = findViewById<Button>(R.id.button_start_route)
         val buttonCancel = findViewById<Button>(R.id.button_cancel_route)
@@ -223,7 +275,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 Toast.LENGTH_SHORT
             ).show()
 
-            // Resto del código existente para buscar rutas...
             geocodeAddress(originText) { originLatLng ->
                 if (originLatLng == null) {
                     Log.e(TAG, "Error: No se pudo geocodificar el origen: $originText")
@@ -263,7 +314,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             setRouteLabelsVisible(false)
         }
     }
-
 
     private fun fetchRoutesApiRoutesImproved(
         origin: LatLng,
@@ -410,7 +460,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     "&avoid=tolls" +
                     "&key=$apiKey"
         )
-
         executeDirectionsRequests(requests, 0, mutableSetOf())
     }
 
@@ -468,14 +517,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         Log.e(TAG, "Error parseando request ${index + 1}: ${e.message}")
                     }
                 }
-
-                // Continuar con el siguiente request
                 executeDirectionsRequests(requests, index + 1, allRoutes)
             }
         })
     }
 
-    // Actualizar también drawCombinedRoutes para que use solo 3 rutas con colores específicos
     private fun drawCombinedRoutes(polylines: List<String>) {
         Log.d(TAG, "Dibujando rutas combinadas con colores específicos")
         clearRoutes()
@@ -549,12 +595,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val colors = listOf(
             ContextCompat.getColor(this, R.color.color_ruta_segura),
             ContextCompat.getColor(this, R.color.color_ruta_insegura),
-            ContextCompat.getColor(this, android.R.color.holo_green_dark),
-            ContextCompat.getColor(this, android.R.color.holo_orange_dark),
-            ContextCompat.getColor(this, android.R.color.holo_purple)
+            ContextCompat.getColor(this, R.color.color_ruta_alternativa),
         )
 
-        for (i in 0 until minOf(routes.length(), 5)) { // Máximo 5 rutas
+        for (i in 0 until minOf(routes.length(), 3)) {
             try {
                 val route = routes.getJSONObject(i)
                 val polylineEncoded = if (source.contains("Routes API")) {
@@ -592,8 +636,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             Toast.LENGTH_SHORT
         ).show()
     }
-
-    // [El resto de métodos permanecen igual...]
 
     /** Inicia actualizaciones de ubicación cuando la app está visible */
     override fun onResume() {
@@ -775,7 +817,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
             if (!addresses.isNullOrEmpty()) {
                 val addressLine = addresses[0].getAddressLine(0)
-                // Se puede usar addressLine para mostrar si se desea
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -881,7 +922,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         routePolylines.clear()
     }
 
-    // Mostrar solo si hay ruta activa
+    /** Mostrar solo si hay ruta activa */
     fun setRouteLabelsVisible(visible: Boolean) {
         floatingLabels.visibility = if (visible) View.VISIBLE else View.GONE
     }
